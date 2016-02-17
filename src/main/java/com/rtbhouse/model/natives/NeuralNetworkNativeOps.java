@@ -10,7 +10,7 @@ import com.github.fommil.jni.JniLoader;
 public final class NeuralNetworkNativeOps {
 
     static {
-        JniLoader.load("lib/jniNeuralNetworkNativeOps.so");
+        JniLoader.load("com/rtbhouse/model/natives/libjniNeuralNetworkNativeOps.so");
     }
 
     private NeuralNetworkNativeOps() {

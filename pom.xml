@@ -46,7 +46,7 @@
                                 <resource>
                                     <directory>.</directory>
                                     <includes>
-                                        <include>jniNeuralNetworkNativeOps.so</include>
+                                        <include>libjniNeuralNetworkNativeOps.so</include>
                                     </includes>
                                 </resource>
                             </resources>
