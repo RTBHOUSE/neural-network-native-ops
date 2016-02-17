@@ -29,7 +29,7 @@ public class NeuralNetworkNativeOpsTest {
     private final float[] expectedReLUx = new float[] { 0, 3 };
     private float[] expectedAbyXplusY = new float[] { 8f + (2f / 3), 11, 7f + (1f / 3) };
 
-    public static FloatBuffer allocateDirectFloatBufferOf(float... src) {
+    private static FloatBuffer allocateDirectFloatBufferOf(float... src) {
         return ByteBuffer
                 .allocateDirect(src.length * Float.BYTES)
                 .order(ByteOrder.nativeOrder())
