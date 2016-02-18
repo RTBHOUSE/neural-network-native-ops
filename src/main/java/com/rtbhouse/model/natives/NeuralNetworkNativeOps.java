@@ -6,6 +6,13 @@ import org.bytedeco.javacpp.annotation.Platform;
 
 import com.github.fommil.jni.JniLoader;
 
+/**
+ * Util class with few operations useful when dealing with neural networks: ReLU, linearForward and simple
+ * matrix-by-vector multiplication. Operations are implemented on native side with BLAS behind the scenes.
+ *
+ * Supports only single precision floating point numbers. Both heap and direct float buffers are supported but best
+ * performance is achieved when using direct buffers.
+ */
 @Platform(include = "NeuralNetworkNativeOps.h", compiler = "fastfpu")
 public final class NeuralNetworkNativeOps {
 
@@ -16,11 +23,29 @@ public final class NeuralNetworkNativeOps {
     private NeuralNetworkNativeOps() {
     }
 
-    @SuppressWarnings({ "PMD.MethodNamingConventions", "checkstyle:MethodName" })
+    /**
+     * Rectified linear unit (ReLU) function. Do its operation in-place.
+     *
+     * All input vector elements are transformed with function:
+     * 
+     * <pre>
+     * f(x) = max(0, x)
+     * </pre>
+     * 
+     * @param inOut
+     *            input/output vector (read write)
+     * @param size
+     *            size of vector
+     */
     public static native void ReLU(FloatBuffer inOut, int size);
+
+    public static void ReLU(FloatBuffer inOut) {
+        ReLU(inOut, inOut.capacity());
+    }
 
     /**
      * Float matrix-by-vector multiplication. Destination memory is read and overwritten.
+     * Contents of {@code y} are read and overwritten. Other buffers are read-only.
      *
      * Operation:
      * 
@@ -29,40 +54,59 @@ public final class NeuralNetworkNativeOps {
      * </pre>
      *
      * @param A
-     *            input matrix (read only) with dimensions: {@code xsize} x {@code ySize}
+     *            input 2d matrix with logical dimensions: {@code xsize} x {@code ySize} (ro)
      * @param x
      *            input vector (ro)
      * @param y
      *            input/output vector (rw)
      * @param xSize
-     *            size of input vector (ro)
+     *            size of input vector
      * @param ySize
-     *            size of input/output vector (ro)
+     *            size of input/output vector
      *
      * @see <a
      *      href=
      *      "http://www.netlib.org/lapack/explore-html/d6/d30/group__single__blas__level2.html#gafc92361b74c6d41c7e5afa0aa5d13ec9"
      *      >sgemv @ netlib lapack docs</a>
      */
-    @SuppressWarnings({ "PMD.MethodNamingConventions", "checkstyle:ParameterName" })
     public static native void gemv(FloatBuffer A, FloatBuffer x, FloatBuffer y, int xSize, int ySize);
+
+    public static void gemv(FloatBuffer A, FloatBuffer x, FloatBuffer y) {
+        gemv(A, x, y, x.capacity(), y.capacity());
+    }
 
     /**
      * Forward operation for single linear neural network layer:
+     * Output contents are discarded and overwritten. Other buffers are read-only.
      * 
      * <pre>
      * output = weights * input + biases
      * </pre>
      * 
-     * Output contents are discarded and overwritten. Other buffers are read-only.
+     * @param weights
+     *            weights 2d matrix with logical dimensions: {@code inputSize} x {@code outputSize} (ro)
+     * @param biases
+     *            bias vector with size {@code outputSize} (ro)
+     * @param input
+     *            input vector with size {@code inputSize} (ro)
+     * @param output
+     *            output vector with size {@code outputSize} (write only)
+     * @param inputSize
+     *            size of input
+     * @param outputSize
+     *            size of output
      */
     public static native void linearForward(FloatBuffer weights, FloatBuffer biases,
             FloatBuffer input, FloatBuffer output, int inputSize, int outputSize);
 
+    public static void linearForward(FloatBuffer weights, FloatBuffer biases, FloatBuffer input, FloatBuffer output) {
+        linearForward(weights, biases, input, output, input.capacity(), output.capacity());
+    }
+
     /**
-     * performs BLAS sgemv operation and checks if results are correct
+     * Performs native side BLAS sgemv operation and checks if results are correct.
      */
-    public static native void test();
+    public static native int test();
 
     public static void main(String[] args) throws Exception {
         test();

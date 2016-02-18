@@ -1,7 +1,7 @@
 # neural network native operations
 
 Small java lib with few neural network operations: ReLU, linearForward and simple matrix-by-vector multiplication.
-Under the sceens it uses OpenBlas native library.
+Behind the scenes it uses OpenBlas native library hence it's few times faster than pure java implementations.
 
 ## Building native part
 
