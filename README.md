@@ -14,7 +14,7 @@ We supply precompiled library for Linux sandybridge 64 bit processor
 with `SSE` and `AVX` instruction set, but without `AVX2`.
 
 To run under other processor / architecture one need to compile few things:
- 1. Get [OpenBLAS](github.com/xianyi/OpenBLAS)
+ 1. Get [OpenBLAS](https://github.com/xianyi/OpenBLAS)
  2. Compile it
 
     `make`
@@ -23,7 +23,7 @@ To run under other processor / architecture one need to compile few things:
  3. and install **precisely** like this
 
     `make PREFIX=~/OpenBLASlib install`
- 4. go to neural-network-native-ops dir and
+ 4. Finally go to neural-network-native-ops dir and
 
     `mvn clean compile exec:exec install`
 
