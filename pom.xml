@@ -12,13 +12,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <javacpp.version>1.1</javacpp.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacpp</artifactId>
-            <version>1.1</version>
+            <version>${javacpp.version}</version>
         </dependency>
 
         <dependency>
@@ -38,6 +39,29 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <commandlineArgs>
+                                -jar ${user.home}/.m2/repository/org/bytedeco/javacpp/${javacpp.version}/javacpp-${javacpp.version}.jar
+                                -classpath ${project.build.outputDirectory}
+                                -d ${project.build.sourceDirectory}/../resources/com/rtbhouse/model/natives/
+                                -Xcompiler -I${user.home}/OpenBLASlib/include/
+                                -Xcompiler ${user.home}/OpenBLASlib/lib/libopenblas.a
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
