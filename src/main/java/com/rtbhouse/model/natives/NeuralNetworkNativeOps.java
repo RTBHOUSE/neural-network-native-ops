@@ -10,8 +10,8 @@ import com.github.fommil.jni.JniLoader;
  * Util class with few operations useful when dealing with neural networks: ReLU, linearForward and simple
  * matrix-by-vector multiplication. Operations are implemented on native side with BLAS behind the scenes.
  *
- * Supports only single precision floating point numbers. Both heap and direct float buffers are supported but best
- * performance is achieved when using direct buffers.
+ * Supports only single precision floating point numbers. Both heap and direct float buffers are supported but
+ * order of magnitude performance boost is achieved when using direct buffers.
  */
 @Platform(include = "NeuralNetworkNativeOps.h", compiler = "fastfpu")
 public final class NeuralNetworkNativeOps {
@@ -54,7 +54,7 @@ public final class NeuralNetworkNativeOps {
      * </pre>
      *
      * @param A
-     *            input 2d matrix with logical dimensions: {@code xsize} x {@code ySize} (ro)
+     *            input 2d matrix with logical dimensions: {@code ySize} x {@code xSize} (ro)
      * @param x
      *            input vector (ro)
      * @param y
@@ -84,7 +84,7 @@ public final class NeuralNetworkNativeOps {
      * </pre>
      * 
      * @param weights
-     *            weights 2d matrix with logical dimensions: {@code inputSize} x {@code outputSize} (ro)
+     *            weights 2d matrix with logical dimensions: {@code outputSize} x {@code inputSize} (ro)
      * @param biases
      *            bias vector with size {@code outputSize} (ro)
      * @param input
