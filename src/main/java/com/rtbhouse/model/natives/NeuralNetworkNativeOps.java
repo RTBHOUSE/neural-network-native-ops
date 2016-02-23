@@ -108,9 +108,5 @@ public final class NeuralNetworkNativeOps {
     /**
      * Performs native side BLAS sgemv operation and checks if results are correct.
      */
-    public static native int test();
-
-    public static void main(String[] args) throws Exception {
-        test();
-    }
+    static native int test();
 }

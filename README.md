@@ -121,3 +121,9 @@ NNNOBenchmark.nativeHeapLinearForward            300           150  thrpt    5  
 NNNOBenchmark.nativeDirectLinearForward          300           150  thrpt    5    287275,461 ±  1522,721  ops/s
 
 ```
+#### run benchmarks
+
+Run of all benchmarks takes more than 1h hence they are turned off by default. To run them type
+```
+mvn test -P Benchmarks
+```

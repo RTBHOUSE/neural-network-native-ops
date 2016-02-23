@@ -1,23 +1,24 @@
 package com.rtbhouse.model.natives;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.Random;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.util.Random;
+
 @State(Scope.Thread)
 public class NNNOBenchmark {
     private static final Random RANDOM = new Random();
 
-    @Param({ "1", "10", "20", "50", "75", "100", "150", "200", "300", "500", "1000", "2000" })
+    // uncomment this to run tests for all this presets
+    @Param({ "1", "10", "20", "50", "100", "200", "300", "500", "1000", "2000" })
     private int inputSize;
-    @Param({ "1", "10", "20", "50", "75", "100", "150", "200", "300", "500", "1000", "2000" })
+    @Param({ "1", "10", "20", "50", "100", "200", "300", "500", "1000", "2000" })
     private int outputSize;
 
     private FloatBuffer directMatrix;
@@ -124,7 +125,7 @@ public class NNNOBenchmark {
     }
 
     public static void randomize(float[][] m) {
-        for (int r = m.length; --r != -1;) {
+        for (int r = m.length; --r != -1; ) {
             randomize(m[r]);
         }
     }
