@@ -48,14 +48,10 @@ flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36
 bogomips	: 6400.01
 ```
 
+#### gemv
+
 Results below (table and graph) shows performance ratio between native
 and pure Java implementation of matrix-by-vector multiplication (gemv)
-
-It shows that using native code will repay when at least one dimension
-is over 20. When both dimensions are between 50 and 1000 native
-multiplication outperforms pure java by order of magnitude.
-Best performance is seen when input vector is large and output vector is small.
-Surprisingly when both dimensions are over 1000 performance gain starts to shrink.
 
 input vector size|10|20|50|75|100|150|200|300|500|1000|2000
  ---|---|---|---|---|---|---|---|---|---|---|---
@@ -74,7 +70,33 @@ input vector size|10|20|50|75|100|150|200|300|500|1000|2000
 
 ![gemv benchmarks](https://github.com/RTBHOUSE/neural-network-native-ops/raw/master/gemv_benchmarks.png)
 
-Here are some detailed benchmarks for selected dimension 300x150.
+It shows that using native code will repay when at least one dimension
+is over 20. When both dimensions are between 50 and 1000 native
+multiplication outperforms pure java by order of magnitude.
+Best performance is seen when input vector is large and output vector is small.
+Surprisingly when both dimensions are over 1000 performance gain starts to shrink.
+
+#### linearForward
+
+Here are same ratios for linear forward operation:
+
+input vector size|1|10|20|50|100|200|500|1000|2000
+ ---|---|---|---|---|---|---|---|---|---
+**output vector size**|||||||||
+1|0.1|0.1|0.2|0.4|0.8|1.4|2.6|3.7|4.8
+10|0.2|0.5|0.9|2.0|4.4|7.0|10.4|11.2|11.7
+20|0.4|0.8|1.6|3.0|6.6|10.5|12.0|14.8|13.8
+50|0.9|1.2|2.2|3.2|8.0|10.3|12.4|13.7|9.0
+100|1.4|1.5|3.1|5.2|8.3|11.3|12.9|10.2|8.9
+200|2.0|1.7|3.5|5.2|8.6|11.5|9.7|10.4|9.0
+500|3.0|1.9|3.7|5.4|8.4|8.4|9.4|9.8|8.7
+1000|4.1|1.8|3.8|5.2|7.6|8.2|9.7|9.6|5.5
+2000|3.5|1.8|3.9|4.8|7.6|8.8|8.7|5.9|3.6
+
+![linear forward benchmarks](https://github.com/RTBHOUSE/neural-network-native-ops/raw/master/linear_forward_benchmarks.png)
+
+#### detailed benchmarks
+And finally some detailed benchmarks for preselected dimension 300x150.
 You can see that using heap float buffers slows down native processing terribly.
 
 ```
@@ -83,18 +105,19 @@ You can see that using heap float buffers slows down native processing terribly.
 # VM invoker: /opt/java/jdk1.8.0_45/jre/bin/java
 # VM options: <none>
 ...
-# Parameters: (inputVectorSize = 300, outputVectorSize = 150)
+# Parameters: (inputSize = 300, outputSize = 150)
 ...
-Benchmark                                                          (inputVectorSize)  (outputVectorSize)   Mode  Cnt         Score        Error  Units
-NeuralNetworkNativeOpsBenchmark.benchmakPureJavaReLU                             300                 150  thrpt    4  10221536,548 ± 240567,923  ops/s
-NeuralNetworkNativeOpsBenchmark.benchmakNativeHeapReLU                           300                 150  thrpt    4   2344688,914 ±  40050,365  ops/s
-NeuralNetworkNativeOpsBenchmark.benchmakNativeDirectReLU                         300                 150  thrpt    4  14628795,989 ± 970377,460  ops/s
+Benchmark                                (inputSize)  (outputSize)   Mode  Cnt         Score       Error  Units
+NNNOBenchmark.pureJavaReLU                       300           150  thrpt    5  10536404,265 ± 75692,695  ops/s
+NNNOBenchmark.nativeHeapReLU                     300           150  thrpt    5   2489921,702 ±  8764,931  ops/s
+NNNOBenchmark.nativeDirectReLU                   300           150  thrpt    5  14825171,409 ± 28517,135  ops/s
 
-NeuralNetworkNativeOpsBenchmark.benchmarkPureJavaGemv                            300                 150  thrpt    4     25172,120 ±   1594,654  ops/s
-NeuralNetworkNativeOpsBenchmark.benchmakNativeHeapGemv                           300                 150  thrpt    4     30641,973 ±   1250,208  ops/s
-NeuralNetworkNativeOpsBenchmark.benchmakNativeDirectGemv                         300                 150  thrpt    4    278981,608 ±   6400,405  ops/s
+NNNOBenchmark.pureJavaGemv                       300           150  thrpt    5     25487,467 ±   149,999  ops/s
+NNNOBenchmark.nativeHeapGemv                     300           150  thrpt    5     27759,599 ±  3544,044  ops/s
+NNNOBenchmark.nativeDirectGemv                   300           150  thrpt    5    305614,040 ±  2719,221  ops/s
 
-NeuralNetworkNativeOpsBenchmark.benchmakNativeHeapLinearForward                  300                 150  thrpt    4     30162,932 ±   2253,911  ops/s
-NeuralNetworkNativeOpsBenchmark.benchmakNativeDirectLinearForward                300                 150  thrpt    4    304687,310 ±   4858,524  ops/s
+NNNOBenchmark.pureJavaLinearForward              300           150  thrpt    5     25475,030 ±    91,038  ops/s
+NNNOBenchmark.nativeHeapLinearForward            300           150  thrpt    5     30342,320 ±   287,873  ops/s
+NNNOBenchmark.nativeDirectLinearForward          300           150  thrpt    5    287275,461 ±  1522,721  ops/s
 
 ```

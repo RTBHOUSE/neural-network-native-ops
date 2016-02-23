@@ -12,13 +12,13 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 @State(Scope.Thread)
-public class NeuralNetworkNativeOpsBenchmark {
+public class NNNOBenchmark {
     private static final Random RANDOM = new Random();
 
-    @Param({ "10", "20", "50", "75", "100", "150", "200", "300", "500", "1000", "2000" })
-    private int inputVectorSize;
-    @Param({ "10", "20", "50", "75", "100", "150", "200", "300", "500", "1000", "2000" })
-    private int outputVectorSize;
+    @Param({ "1", "10", "20", "50", "75", "100", "150", "200", "300", "500", "1000", "2000" })
+    private int inputSize;
+    @Param({ "1", "10", "20", "50", "75", "100", "150", "200", "300", "500", "1000", "2000" })
+    private int outputSize;
 
     private FloatBuffer directMatrix;
     private FloatBuffer directInput;
@@ -34,68 +34,74 @@ public class NeuralNetworkNativeOpsBenchmark {
 
     @Setup
     public void init() throws Exception {
-        directMatrix = allocateDirectFloatBufferOf(inputVectorSize * outputVectorSize);
-        directInput = allocateDirectFloatBufferOf(inputVectorSize);
-        directOutput = allocateDirectFloatBufferOf(outputVectorSize);
+        directMatrix = allocateDirectFloatBufferOf(inputSize * outputSize);
+        directInput = allocateDirectFloatBufferOf(inputSize);
+        directOutput = allocateDirectFloatBufferOf(outputSize);
         randomize(directMatrix);
         randomize(directInput);
         randomize(directOutput);
 
-        heapMatrix = FloatBuffer.wrap(new float[inputVectorSize * outputVectorSize]);
-        heapInput = FloatBuffer.wrap(new float[inputVectorSize]);
-        heapOutput = FloatBuffer.wrap(new float[outputVectorSize]);
+        heapMatrix = FloatBuffer.wrap(new float[inputSize * outputSize]);
+        heapInput = FloatBuffer.wrap(new float[inputSize]);
+        heapOutput = FloatBuffer.wrap(new float[outputSize]);
         randomize(heapMatrix);
         randomize(heapInput);
         randomize(heapOutput);
 
-        primitiveMatrix = new float[outputVectorSize][inputVectorSize];
-        primitiveInput = new float[inputVectorSize];
-        primitiveOutput = new float[outputVectorSize];
+        primitiveMatrix = new float[outputSize][inputSize];
+        primitiveInput = new float[inputSize];
+        primitiveOutput = new float[outputSize];
         randomize(primitiveMatrix);
         randomize(primitiveInput);
         randomize(primitiveOutput);
     }
 
     @Benchmark
-    public void benchmakNativeDirectReLU() {
+    public void nativeDirectReLU() {
         NeuralNetworkNativeOps.ReLU(directInput);
     }
 
     @Benchmark
-    public void benchmakNativeHeapReLU() {
+    public void nativeHeapReLU() {
         NeuralNetworkNativeOps.ReLU(heapInput);
     }
 
     @Benchmark
-    public void benchmakPureJavaReLU() {
+    public void pureJavaReLU() {
         pureJavaReLU(primitiveInput);
     }
 
     @Benchmark
-    public void benchmakNativeDirectGemv() {
+    public void nativeDirectGemv() {
         NeuralNetworkNativeOps.gemv(directMatrix, directInput, directOutput);
     }
 
     @Benchmark
-    public void benchmakNativeHeapGemv() {
+    public void nativeHeapGemv() {
         NeuralNetworkNativeOps.gemv(heapMatrix, heapInput, heapOutput);
     }
 
     @Benchmark
-    public void benchmarkPureJavaGemv() {
+    public void pureJavaGemv() {
         pureJavaGemv(primitiveMatrix, primitiveInput, primitiveOutput);
     }
 
     @Benchmark
-    public void benchmakNativeDirectLinearForward() {
+    public void nativeDirectLinearForward() {
         // second parameter simulates biases
         NeuralNetworkNativeOps.linearForward(directMatrix, directOutput, directInput, directOutput);
     }
 
     @Benchmark
-    public void benchmakNativeHeapLinearForward() {
+    public void nativeHeapLinearForward() {
         // second parameter simulates biases
         NeuralNetworkNativeOps.linearForward(heapMatrix, heapOutput, heapInput, heapOutput);
+    }
+
+    @Benchmark
+    public void pureJavaLinearForward() {
+        // second parameter simulates biases
+        pureJavaLinearForward(primitiveMatrix, primitiveOutput, primitiveInput, primitiveOutput);
     }
 
     private static FloatBuffer allocateDirectFloatBufferOf(int capacity) {
@@ -123,6 +129,12 @@ public class NeuralNetworkNativeOpsBenchmark {
         }
     }
 
+    private static void pureJavaReLU(float[] x) {
+        for (int c = 0; c < x.length; c++) {
+            x[c] = x[c] < 0 ? 0 : x[c];
+        }
+    }
+
     private static void pureJavaGemv(float[][] A, float[] x, float[] y) {
         if (y.length != A.length || x.length != A[0].length) {
             System.out.println("incompatible matrix sizes");
@@ -136,10 +148,13 @@ public class NeuralNetworkNativeOpsBenchmark {
         }
     }
 
-    private static void pureJavaReLU(float[] x) {
-        for (int c = 0; c < x.length; c++) {
-            x[c] = x[c] < 0 ? 0 : x[c];
+    private static void pureJavaLinearForward(float[][] weights, float[] biases, float[] input, float[] output) {
+        if (biases.length != output.length) {
+            System.out.println("incompatible biases and output");
+            System.exit(-1);
         }
+        System.arraycopy(biases, 0, output, 0, biases.length);
+        pureJavaGemv(weights, input, output);
     }
 
 }
