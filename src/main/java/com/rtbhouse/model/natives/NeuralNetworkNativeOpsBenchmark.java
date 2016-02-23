@@ -6,80 +6,96 @@ import java.nio.FloatBuffer;
 import java.util.Random;
 
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 @State(Scope.Thread)
 public class NeuralNetworkNativeOpsBenchmark {
-
     private static final Random RANDOM = new Random();
-    private static final int N = 300;
-    private static final int M = 150;
 
-    private final FloatBuffer directA = allocateDirectFloatBufferOf(N * M);
-    private final FloatBuffer directX = allocateDirectFloatBufferOf(N);
-    private final FloatBuffer directY = allocateDirectFloatBufferOf(M);
+    @Param({ "10", "20", "50", "75", "100", "150", "200", "300", "500", "1000", "2000" })
+    private int inputVectorSize;
+    @Param({ "10", "20", "50", "75", "100", "150", "200", "300", "500", "1000", "2000" })
+    private int outputVectorSize;
 
-    private final FloatBuffer heapA = FloatBuffer.wrap(new float[N * M]);
-    private final FloatBuffer heapX = FloatBuffer.wrap(new float[N]);
-    private final FloatBuffer heapY = FloatBuffer.wrap(new float[M]);
+    private FloatBuffer directMatrix;
+    private FloatBuffer directInput;
+    private FloatBuffer directOutput;
 
-    private final float[][] primitiveA = new float[M][N];
-    private final float[] primitiveX = new float[N];
-    private final float[] primitiveY = new float[M];
+    private FloatBuffer heapMatrix;
+    private FloatBuffer heapInput;
+    private FloatBuffer heapOutput;
+
+    private float[][] primitiveMatrix;
+    private float[] primitiveInput;
+    private float[] primitiveOutput;
 
     @Setup
     public void init() throws Exception {
-        randomize(directA);
-        randomize(directX);
-        randomize(directY);
-        randomize(heapA);
-        randomize(heapX);
-        randomize(heapY);
-        randomize(primitiveA);
-        randomize(primitiveX);
-        randomize(primitiveY);
+        directMatrix = allocateDirectFloatBufferOf(inputVectorSize * outputVectorSize);
+        directInput = allocateDirectFloatBufferOf(inputVectorSize);
+        directOutput = allocateDirectFloatBufferOf(outputVectorSize);
+        randomize(directMatrix);
+        randomize(directInput);
+        randomize(directOutput);
+
+        heapMatrix = FloatBuffer.wrap(new float[inputVectorSize * outputVectorSize]);
+        heapInput = FloatBuffer.wrap(new float[inputVectorSize]);
+        heapOutput = FloatBuffer.wrap(new float[outputVectorSize]);
+        randomize(heapMatrix);
+        randomize(heapInput);
+        randomize(heapOutput);
+
+        primitiveMatrix = new float[outputVectorSize][inputVectorSize];
+        primitiveInput = new float[inputVectorSize];
+        primitiveOutput = new float[outputVectorSize];
+        randomize(primitiveMatrix);
+        randomize(primitiveInput);
+        randomize(primitiveOutput);
     }
 
     @Benchmark
     public void benchmakNativeDirectReLU() {
-        NeuralNetworkNativeOps.ReLU(directX);
+        NeuralNetworkNativeOps.ReLU(directInput);
     }
 
     @Benchmark
     public void benchmakNativeHeapReLU() {
-        NeuralNetworkNativeOps.ReLU(heapX);
+        NeuralNetworkNativeOps.ReLU(heapInput);
     }
 
     @Benchmark
     public void benchmakPureJavaReLU() {
-        pureJavaReLU(primitiveX);
+        pureJavaReLU(primitiveInput);
     }
 
     @Benchmark
     public void benchmakNativeDirectGemv() {
-        NeuralNetworkNativeOps.gemv(directA, directX, directY);
+        NeuralNetworkNativeOps.gemv(directMatrix, directInput, directOutput);
     }
 
     @Benchmark
     public void benchmakNativeHeapGemv() {
-        NeuralNetworkNativeOps.gemv(heapA, heapX, heapY);
+        NeuralNetworkNativeOps.gemv(heapMatrix, heapInput, heapOutput);
     }
 
     @Benchmark
     public void benchmarkPureJavaGemv() {
-        pureJavaGemv(primitiveA, primitiveX, primitiveY);
+        pureJavaGemv(primitiveMatrix, primitiveInput, primitiveOutput);
     }
 
     @Benchmark
     public void benchmakNativeDirectLinearForward() {
-        NeuralNetworkNativeOps.linearForward(directA, directY, directX, directY);
+        // second parameter simulates biases
+        NeuralNetworkNativeOps.linearForward(directMatrix, directOutput, directInput, directOutput);
     }
 
     @Benchmark
     public void benchmakNativeHeapLinearForward() {
-        NeuralNetworkNativeOps.linearForward(heapA, heapY, heapX, heapY);
+        // second parameter simulates biases
+        NeuralNetworkNativeOps.linearForward(heapMatrix, heapOutput, heapInput, heapOutput);
     }
 
     private static FloatBuffer allocateDirectFloatBufferOf(int capacity) {

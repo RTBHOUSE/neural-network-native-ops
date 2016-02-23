@@ -12,6 +12,8 @@ import com.github.fommil.jni.JniLoader;
  *
  * Supports only single precision floating point numbers. Both heap and direct float buffers are supported but
  * order of magnitude performance boost is achieved when using direct buffers.
+ *
+ * @author Piotr Chromiec
  */
 @Platform(include = "NeuralNetworkNativeOps.h", compiler = "fastfpu")
 public final class NeuralNetworkNativeOps {
