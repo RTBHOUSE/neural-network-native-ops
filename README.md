@@ -127,3 +127,14 @@ Run of all benchmarks takes more than 1h hence they are turned off by default. T
 ```
 mvn test -P Benchmarks
 ```
+## installation
+
+Releases are distributed on Maven central:
+
+```
+<dependency>
+    <groupId>com.rtbhouse.model</groupId>
+    <artifactId>neural-network-native-ops</artifactId>
+    <version>0.1</version>
+</dependency>
+```
