@@ -131,10 +131,10 @@ mvn test -P Benchmarks
 
 Releases are distributed on Maven central:
 
-```
+```xml
 <dependency>
     <groupId>com.rtbhouse.model</groupId>
     <artifactId>neural-network-native-ops</artifactId>
-    <version>0.1</version>
+    <version>${nnno.version}</version>
 </dependency>
 ```
