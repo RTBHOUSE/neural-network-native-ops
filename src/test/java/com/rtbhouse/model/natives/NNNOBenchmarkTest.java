@@ -1,6 +1,8 @@
 package com.rtbhouse.model.natives;
 
-import com.rtbhouse.tests.Benchmark;
+import static com.rtbhouse.model.natives.NeuralNetworkNativeOpsTest.MAX_ERROR;
+import static org.junit.Assert.assertArrayEquals;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.openjdk.jmh.runner.Runner;
@@ -9,7 +11,15 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
+import com.rtbhouse.tests.Benchmark;
+
 public class NNNOBenchmarkTest {
+
+    private final float[] A = new float[] { 1.1f, -1.02f, 1.003f, -1.0004f, 1.00005f, -1.000006f };
+    private final float[] x = new float[] { 2, -1 };
+    private final float[] y = new float[] { -1, 0, 1 };
+    private float[] expectedAbyXplusY = new float[] { 2.22f, 3.0064f, 4.000106f };
+
 
     private ChainedOptionsBuilder benchmarkGenericOptions = new OptionsBuilder()
             .warmupTime(TimeValue.seconds(1))
@@ -20,6 +30,22 @@ public class NNNOBenchmarkTest {
             .forks(1)
             .shouldFailOnError(true)
             .shouldDoGC(true);
+
+    @Test
+    public void testPureJavaGemv() {
+        // when
+        NNNOBenchmark.pureJavaGemv(A, x, y);
+        // then
+        assertArrayEquals(expectedAbyXplusY, y, MAX_ERROR);
+    }
+
+    @Test
+    public void testNetlibGemv() {
+        // when
+        NNNOBenchmark.netlibJavaGemv(A, x, y);
+        // then
+        assertArrayEquals(expectedAbyXplusY, y, MAX_ERROR);
+    }
 
     @Test
     @Category(Benchmark.class)
@@ -34,10 +60,22 @@ public class NNNOBenchmarkTest {
 
     @Test
     @Category(Benchmark.class)
-    public void nativeAndPureJavaGemvBenchmarks() throws Exception {
+    public void nativeVsPureJavaGemvBenchmark() throws Exception {
         Options opts = benchmarkGenericOptions
-                .include("Gemv")
-                .exclude("Heap")
+                .include("nativeDirectGemv")
+                .include("pureJavaGemv")
+                .build();
+
+        new Runner(opts).run();
+    }
+
+
+    @Test
+    @Category(Benchmark.class)
+    public void nativeVsNetlibJavaGemvBenchmark() throws Exception {
+        Options opts = benchmarkGenericOptions
+                .include("nativeDirectGemv")
+                .include("netlibJavaGemv")
                 .build();
 
         new Runner(opts).run();
@@ -45,10 +83,10 @@ public class NNNOBenchmarkTest {
 
     @Test
     @Category(Benchmark.class)
-    public void nativeAndPureJavaLinearForwardBenchmarks() throws Exception {
+    public void nativeVsPureJavaLinearForwardBenchmarks() throws Exception {
         Options opts = benchmarkGenericOptions
-                .include("LinearForward")
-                .exclude("Heap")
+                .include("nativeDirectLinearForward")
+                .include("pureJavaLinearForward")
                 .build();
 
         new Runner(opts).run();

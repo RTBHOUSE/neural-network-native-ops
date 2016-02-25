@@ -50,6 +50,14 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.fommil.netlib</groupId>
+            <artifactId>all</artifactId>
+            <version>1.1.2</version>
+            <type>test</type>
+        </dependency>
+
     </dependencies>
 
     <profiles>
@@ -115,6 +123,7 @@
                 </executions>
             </plugin>
 
+            <!-- mvn central reqs -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -160,7 +169,6 @@
         </plugins>
     </build>
 
-    <!-- mvn central reqs -->
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Small Java lib with few neural network operations:
         ReLU, linearForward and simple matrix-by-vector multiplication.
@@ -199,7 +207,5 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
-
 
 </project>

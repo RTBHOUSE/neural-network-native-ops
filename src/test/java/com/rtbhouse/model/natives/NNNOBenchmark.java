@@ -1,24 +1,28 @@
 package com.rtbhouse.model.natives;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.util.Random;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.Random;
+import com.github.fommil.netlib.BLAS;
+import com.github.fommil.netlib.NativeSystemBLAS;
 
 @State(Scope.Thread)
 public class NNNOBenchmark {
     private static final Random RANDOM = new Random();
+    static final BLAS INSTANCE = NativeSystemBLAS.getInstance();
 
     // uncomment this to run tests for all this presets
-    @Param({ "1", "10", "20", "50", "100", "200", "300", "500", "1000", "2000" })
+    @Param({ "1", "10", "20", "50", "100", "200", "500", "1000", "2000" })
     private int inputSize;
-    @Param({ "1", "10", "20", "50", "100", "200", "300", "500", "1000", "2000" })
+    @Param({ "1", "10", "20", "50", "100", "200", "500", "1000", "2000" })
     private int outputSize;
 
     private FloatBuffer directMatrix;
@@ -29,7 +33,7 @@ public class NNNOBenchmark {
     private FloatBuffer heapInput;
     private FloatBuffer heapOutput;
 
-    private float[][] primitiveMatrix;
+    private float[] primitiveMatrix;
     private float[] primitiveInput;
     private float[] primitiveOutput;
 
@@ -49,7 +53,7 @@ public class NNNOBenchmark {
         randomize(heapInput);
         randomize(heapOutput);
 
-        primitiveMatrix = new float[outputSize][inputSize];
+        primitiveMatrix = new float[outputSize * inputSize];
         primitiveInput = new float[inputSize];
         primitiveOutput = new float[outputSize];
         randomize(primitiveMatrix);
@@ -85,6 +89,11 @@ public class NNNOBenchmark {
     @Benchmark
     public void pureJavaGemv() {
         pureJavaGemv(primitiveMatrix, primitiveInput, primitiveOutput);
+    }
+
+    @Benchmark
+    public void netlibJavaGemv() {
+        netlibJavaGemv(primitiveMatrix, primitiveInput, primitiveOutput);
     }
 
     @Benchmark
@@ -124,32 +133,31 @@ public class NNNOBenchmark {
         }
     }
 
-    public static void randomize(float[][] m) {
-        for (int r = m.length; --r != -1; ) {
-            randomize(m[r]);
-        }
-    }
-
     private static void pureJavaReLU(float[] x) {
         for (int c = 0; c < x.length; c++) {
             x[c] = x[c] < 0 ? 0 : x[c];
         }
     }
 
-    private static void pureJavaGemv(float[][] A, float[] x, float[] y) {
-        if (y.length != A.length || x.length != A[0].length) {
+    static void pureJavaGemv(float[] A, float[] x, float[] y) {
+        if (y.length * x.length != A.length) {
             System.out.println("incompatible matrix sizes");
             System.exit(-1);
         }
 
-        for (int r = 0; r < A.length; r++) {
+        int i = 0;
+        for (int r = 0; r < y.length; r++) {
             for (int c = 0; c < x.length; c++) {
-                y[r] += x[c] * A[r][c];
+                y[r] += x[c] * A[i++];
             }
         }
     }
 
-    private static void pureJavaLinearForward(float[][] weights, float[] biases, float[] input, float[] output) {
+    static void netlibJavaGemv(float[] matrix, float[] vector, float[] inOut) {
+        INSTANCE.sgemv("T", vector.length, inOut.length, 1.0f, matrix, 0, vector.length, vector, 0, 1, 1.0f, inOut, 0, 1);
+    }
+
+    private static void pureJavaLinearForward(float[] weights, float[] biases, float[] input, float[] output) {
         if (biases.length != output.length) {
             System.out.println("incompatible biases and output");
             System.exit(-1);
