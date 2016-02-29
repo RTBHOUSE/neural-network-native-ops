@@ -1,30 +1,30 @@
-# neural network native operations
+# neural-network native operations
 
-Small Java lib with few neural network operations:
+Small Java lib with few neural-network operations:
  - ReLU
  - linearForward
  - and simple matrix-by-vector multiplication (gemv).
 
 Behind the scenes it uses OpenBlas native library
-hence it's even order of magnitude faster than pure Java implementation.
+hence it's even an order of magnitude faster than pure Java implementation.
 
-Its also faster than [netlib-java](https://github.com/fommil/netlib-java) package.
+It's also faster than [netlib-java](https://github.com/fommil/netlib-java) package.
 
-One drawback is that full performance is achieved only on direct float buffers,
-which are expensive to create, so must be reused.
+Since full performance is achieved only with direct float buffers,
+which are expensive to create, they must be reused.
 
-## building native part
+## building the library
 
-We supply precompiled library for Linux sandybridge 64 bit processor
-with `SSE` and `AVX` instruction set, but without `AVX2`.
+We supply a Maven artifact precompiled for Linux and sandybridge 64-bit processors
+with the `SSE` and `AVX` instruction set on, but without `AVX2`.
 
-To run under other processor / architecture one need to compile few things:
+To run on another processor / architecture one needs to follow the steps below:
  1. Get [OpenBLAS](https://github.com/xianyi/OpenBLAS)
  2. Compile it
 
     `make`
 
-    (or `make USE_THREAD=0` when you don't want multithreading)
+    (or `make USE_THREAD=0` if you don't want multithreading)
  3. and install **precisely** like this
 
     `make PREFIX=~/OpenBLASlib install`
@@ -37,7 +37,7 @@ To run under other processor / architecture one need to compile few things:
 
 ## performance
 
-Benchmarks was run on my desktop machine
+Benchmarks were run on a desktop machine
 
 ```
 $ cat /proc/cpuinfo
@@ -52,8 +52,8 @@ bogomips	: 6400.01
 
 #### gemv
 
-Results below (table and graph) shows performance ratio between native
-and pure Java implementation of matrix-by-vector multiplication (gemv)
+Results below (table and graph) show performance ratio between native
+and pure Java implementation of the matrix-by-vector multiplication (gemv)
 
 input vector size|1|10|20|50|100|200|500|1000|2000
  ---|---|---|---|---|---|---|---|---|---
@@ -70,17 +70,17 @@ input vector size|1|10|20|50|100|200|500|1000|2000
 
 ![gemv benchmarks vs pure Java](benchmarks/gemv_vs_pure_java.png)
 
-It shows that using native code will repay when at least one dimension
-is over 20. When both dimensions are between 50 and 1000 native
-multiplication outperforms pure java by order of magnitude.
-Best performance is seen when input vector is large and output vector is small.
-Surprisingly when both dimensions are over 1000 performance gain starts to shrink.
+It proves that using native code will repay when at least one dimension
+is over 20. When both dimensions are between 50 and 1000, native
+multiplication outperforms pure Java by an order of magnitude.
+Best performance is observed when input vector is large and output vector is small.
+Surprisingly, when both dimensions are over 1000, performance gain starts to diminish.
 
 
 ##### comparsion with netlib-java
 
 nnno is faster than popular [netlib-java](https://github.com/fommil/netlib-java) package:
-As you can se below for dimensions up to 100 it is even twice as fast.
+As you can se below, for dimensions up to 100 it is even twice as fast.
 
 input vector size|1|10|20|50|100|200|500|1000|2000
  ---|---|---|---|---|---|---|---|---|---
@@ -119,7 +119,7 @@ input vector size|1|10|20|50|100|200|500|1000|2000
 ![linear forward benchmarks vs pure Java](benchmarks/linear_forward_vs_pure_java.png)
 
 #### detailed benchmarks
-And finally some detailed benchmarks for preselected dimension 300x150.
+Finally, some detailed benchmarks for preselected dimension 300x150.
 You can see that using heap float buffers slows down native processing terribly.
 
 ```
@@ -146,7 +146,7 @@ NNNOBenchmark.nativeDirectLinearForward          300           150  thrpt    5  
 ```
 #### run benchmarks
 
-Run of all benchmarks takes more than 1h hence they are turned off by default. To run them type
+It takes more than 1h to run all benchmarks, hence they are turned off by default. To run them type
 ```
 mvn test -P Benchmarks
 ```
