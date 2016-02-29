@@ -5,9 +5,9 @@ static const float ALPHA = 1.0, BETA = 1.0;
 static const int X_INC = 1, Y_INC = 1;
 
 /**
- * Rectified linear unit (ReLU) function. Do its operation in-place.
+ * Rectified linear unit (ReLU) function. Performs the operation in-place.
  *
- * All input vector elements are transformed with function:
+ * All input vector elements are transformed with the function:
  *   f(x) = max(0, x)
  */
 inline void ReLU(float *inOut, const int size) {
@@ -34,7 +34,7 @@ inline void gemv(const float *A, const float *x, float *y, const int xSize, cons
 }
 
 /**
- * Forward operation for single linear neural network layer
+ * Forward operation for a single linear neural-network layer
  *
  * Operation:
  *   output = weights * input + biases
