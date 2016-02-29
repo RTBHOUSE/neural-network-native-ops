@@ -7,11 +7,11 @@ import org.bytedeco.javacpp.annotation.Platform;
 import com.github.fommil.jni.JniLoader;
 
 /**
- * Util class with few operations useful when dealing with neural networks: ReLU, linearForward and simple
+ * Utility class with few operations useful when dealing with neural networks: ReLU, linearForward and simple
  * matrix-by-vector multiplication. Operations are implemented on native side with BLAS behind the scenes.
  *
  * Supports only single precision floating point numbers. Both heap and direct float buffers are supported but
- * order of magnitude performance boost is achieved when using direct buffers.
+ * an order of magnitude performance boost is achieved when using direct buffers.
  *
  * @author Piotr Chromiec
  */
@@ -26,7 +26,7 @@ public final class NeuralNetworkNativeOps {
     }
 
     /**
-     * Rectified linear unit (ReLU) function. Do its operation in-place.
+     * Rectified linear unit (ReLU) function. Performs the operation in-place.
      *
      * All input vector elements are transformed with function:
      * 
@@ -47,7 +47,7 @@ public final class NeuralNetworkNativeOps {
 
     /**
      * Float matrix-by-vector multiplication. Destination memory is read and overwritten.
-     * Contents of {@code y} are read and overwritten. Other buffers are read-only.
+     * Other buffers are read-only.
      *
      * Operation:
      * 
@@ -78,8 +78,8 @@ public final class NeuralNetworkNativeOps {
     }
 
     /**
-     * Forward operation for single linear neural network layer:
-     * Output contents are discarded and overwritten. Other buffers are read-only.
+     * Forward operation for a single linear neural-network layer:
+     * Output contents is discarded and overwritten. Other buffers are read-only.
      * 
      * <pre>
      * output = weights * input + biases
@@ -107,6 +107,7 @@ public final class NeuralNetworkNativeOps {
 
     /**
      * Performs native side BLAS sgemv operation and checks if results are correct.
+     * Used only for the module development purposes, doesn't make part of a regular usage pattern.
      */
     static native int test();
 }
