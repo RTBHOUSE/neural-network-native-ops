@@ -100,6 +100,19 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
@@ -111,14 +124,13 @@
                         </goals>
                         <configuration>
                             <executable>java</executable>
-                            <commandlineArgs>
-                                -jar
-                                ${user.home}/.m2/repository/org/bytedeco/javacpp/${javacpp.version}/javacpp-${javacpp.version}.jar
-                                -classpath ${project.build.outputDirectory}
-                                -d ${project.build.sourceDirectory}/../resources/com/rtbhouse/model/natives/
-                                -Xcompiler -I${user.home}/OpenBLASlib/include/
-                                -Xcompiler ${user.home}/OpenBLASlib/lib/libopenblas.a
-                            </commandlineArgs>
+                            <arguments>
+                                <argument>-jar</argument> <argument>${org.bytedeco:javacpp:jar}</argument>
+                                <argument>-classpath</argument> <argument>${project.build.outputDirectory}</argument>
+                                <argument>-d</argument> <argument>${project.build.sourceDirectory}/../resources/com/rtbhouse/model/natives/</argument>
+                                <argument>-Xcompiler</argument> <argument>-I${user.home}/OpenBLASlib/include/</argument>
+                                <argument>-Xcompiler</argument> <argument>${user.home}/OpenBLASlib/lib/libopenblas.a</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
