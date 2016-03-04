@@ -154,7 +154,7 @@ public class NNNOBenchmark {
     }
 
     static void netlibJavaGemv(float[] matrix, float[] vector, float[] inOut) {
-        INSTANCE.sgemv("T", vector.length, inOut.length, 1.0f, matrix, 0, vector.length, vector, 0, 1, 1.0f, inOut, 0, 1);
+        INSTANCE.sgemv("T", vector.length, inOut.length, 1.0f, matrix, vector.length, vector, 1, 1.0f, inOut, 1);
     }
 
     private static void pureJavaLinearForward(float[] weights, float[] biases, float[] input, float[] output) {
