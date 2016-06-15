@@ -6,7 +6,7 @@
 
     <groupId>com.rtbhouse.model</groupId>
     <artifactId>neural-network-native-ops</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -125,11 +125,16 @@
                         <configuration>
                             <executable>java</executable>
                             <arguments>
-                                <argument>-jar</argument> <argument>${org.bytedeco:javacpp:jar}</argument>
-                                <argument>-classpath</argument> <argument>${project.build.outputDirectory}</argument>
-                                <argument>-d</argument> <argument>${project.build.sourceDirectory}/../resources/com/rtbhouse/model/natives/</argument>
-                                <argument>-Xcompiler</argument> <argument>-I${user.home}/OpenBLASlib/include/</argument>
-                                <argument>-Xcompiler</argument> <argument>${user.home}/OpenBLASlib/lib/libopenblas.a</argument>
+                                <argument>-jar</argument>
+                                <argument>${org.bytedeco:javacpp:jar}</argument>
+                                <argument>-classpath</argument>
+                                <argument>${project.build.outputDirectory}</argument>
+                                <argument>-d</argument>
+                                <argument>${project.build.sourceDirectory}/../resources/com/rtbhouse/model/natives/</argument>
+                                <argument>-Xcompiler</argument>
+                                <argument>-I${user.home}/OpenBLASlib/include/</argument>
+                                <argument>-Xcompiler</argument>
+                                <argument>${user.home}/OpenBLASlib/lib/libopenblas.a</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -172,7 +177,7 @@
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
-                        <phase>verify</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>sign</goal>
                         </goals>

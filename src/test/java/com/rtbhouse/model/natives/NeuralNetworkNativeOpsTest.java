@@ -1,17 +1,18 @@
 package com.rtbhouse.model.natives;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
-import org.junit.Assert;
-import org.junit.Test;
-
+import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.NO_TRANSPOSE;
 import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.ReLU;
+import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.TRANSPOSE;
 import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.gemv;
 import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.linearForward;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
+import org.junit.Test;
 
 public class NeuralNetworkNativeOpsTest {
     static final float MAX_ERROR = 1e-6f;
@@ -84,7 +85,7 @@ public class NeuralNetworkNativeOpsTest {
     @Test
     public void testHeapFloatBuffersLinearForward() {
         // when
-        linearForward(heapA, heapY, heapX, heapOutput);
+        linearForward(NO_TRANSPOSE, heapA, heapY, heapX, heapOutput);
         // then
         assertArrayEquals(expectedAbyXplusY, heapOutput.array(), MAX_ERROR);
     }
@@ -92,8 +93,152 @@ public class NeuralNetworkNativeOpsTest {
     @Test
     public void testDirectFloatBuffersLinearForward() {
         // when
-        linearForward(directA, directY, directX, directOutput);
+        linearForward(NO_TRANSPOSE, directA, directY, directX, directOutput);
         // then
         assertArrayEquals(expectedAbyXplusY, getArrayFrom(directOutput), MAX_ERROR);
+    }
+
+    @Test
+    public void shouldMultiplyTwoMatrices() {
+        //given
+        FloatBuffer a = matrixFB(
+                1f / 3, 1, -1,
+                2, 4, -1);
+        FloatBuffer b = matrixFB(
+                1f / 5, 1,
+                7, 49,
+                -2, -3);
+        FloatBuffer c = FloatBuffer.wrap(new float[] { 0, 0,
+                0, 0 });
+
+        //when
+        NeuralNetworkNativeOps.gemm(a, b, c, 2, 2, 3);
+
+        //then
+        assertArrayEquals(
+                matrix(9.06666666f, 52.33333333f,
+                        30.4000f, 201.00000f),
+                getArrayFrom(c),
+                MAX_ERROR);
+    }
+
+    @Test
+    public void shouldForwardLinearOnBatch() {
+        //given
+        FloatBuffer weights = matrixFB(
+                1f / 3, 1, 3,
+                2, 4, 9);
+        FloatBuffer biases = matrixFB(0.1f, 0.2f, -0.3f);
+
+        FloatBuffer input = matrixFB(
+                1f / 5, 1,
+                7, 49,
+                1f / 5, 1,
+                1f / 5, 1,
+                7, 49);
+        FloatBuffer output = matrixFB(
+                1, 2, 3,
+                3, 4, 5,
+                5, 6, 6,
+                7, 8, 7,
+                9, 10, -1);
+
+        //when
+        NeuralNetworkNativeOps.linearBatchForward(NO_TRANSPOSE, weights, biases, input, output, 2, 3, 5);
+
+        //then
+        assertArrayEquals(
+                matrix(31f / 15 + 0.1f, 4.4f, 9.3f,
+                        301f / 3 + 0.1f, 203.2f, 461.7f,
+                        31f / 15 + 0.1f, 4.4f, 9.3f,
+                        31f / 15 + 0.1f, 4.4f, 9.3f,
+                        301f / 3 + 0.1f, 203.2f, 461.7f),
+                getArrayFrom(output),
+                MAX_ERROR);
+    }
+
+    @Test
+    public void shouldForwardLinearOnBatchWithTranspose() {
+        //given
+        FloatBuffer weights = matrixFB(
+                1f / 3, 2,
+                1, 4,
+                3, 9);
+        FloatBuffer biases = matrixFB(0.1f, 0.2f, -0.3f);
+
+        FloatBuffer input = matrixFB(
+                1f / 5, 1,
+                7, 49,
+                1f / 5, 1,
+                1f / 5, 1,
+                7, 49);
+        FloatBuffer output = matrixFB(
+                1, 2, 3,
+                3, 4, 5,
+                5, 6, 6,
+                7, 8, 7,
+                9, 10, -1);
+
+        //when
+        NeuralNetworkNativeOps.linearBatchForward(TRANSPOSE, weights, biases, input, output, 2, 3, 5);
+
+        //then
+        assertArrayEquals(
+                matrix(31f / 15 + 0.1f, 4.4f, 9.3f,
+                        301f / 3 + 0.1f, 203.2f, 461.7f,
+                        31f / 15 + 0.1f, 4.4f, 9.3f,
+                        31f / 15 + 0.1f, 4.4f, 9.3f,
+                        301f / 3 + 0.1f, 203.2f, 461.7f),
+                getArrayFrom(output),
+                MAX_ERROR);
+    }
+
+    @Test
+    public void shouldForwardLinear() {
+        //given
+        FloatBuffer weights = matrixFB(
+                1f / 3, 2,
+                1, 4,
+                3, 9);
+        FloatBuffer biases = matrixFB(0.1f, 0.2f, -0.3f); //vector
+        FloatBuffer input = matrixFB(1f / 5, 1); //vector
+        FloatBuffer output = matrixFB(1, 2, 3); //vector
+
+        //when
+        NeuralNetworkNativeOps.linearForward(NO_TRANSPOSE, weights, biases, input, output);
+
+        //then
+        assertArrayEquals(
+                matrix(31f / 15 + 0.1f, 4.4f, 9.3f),
+                getArrayFrom(output),
+                MAX_ERROR);
+    }
+
+    @Test
+    public void shouldForwardLinearWithTranspose() {
+        //given
+        FloatBuffer weights = matrixFB(
+                1f / 3, 1, 3,
+                2, 4, 9);
+        FloatBuffer biases = matrixFB(0.1f, 0.2f, -0.3f); //vector
+        FloatBuffer input = matrixFB(1f / 5, 1); //vector
+        FloatBuffer output = matrixFB(1, 2, 3); //vector
+
+        //when
+        NeuralNetworkNativeOps.linearForward(TRANSPOSE, weights, biases, input, output);
+
+        //then
+        assertArrayEquals(
+                matrix(31f / 15 + 0.1f, 4.4f, 9.3f),
+                getArrayFrom(output),
+                MAX_ERROR);
+    }
+
+    private float[] matrix(float... values) {
+        return values;
+    }
+
+    private FloatBuffer matrixFB(float... values) {
+        return FloatBuffer.wrap(values);
     }
 }
