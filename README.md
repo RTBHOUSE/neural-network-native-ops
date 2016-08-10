@@ -22,9 +22,9 @@ To run on another processor / architecture one needs to follow the steps below:
  1. Get [OpenBLAS](https://github.com/xianyi/OpenBLAS)
  2. Compile it
 
-    `make`
+    `make COMMON_OPT="-O3 -g -fno-omit-frame-pointer"`
 
-    (or `make USE_THREAD=0` if you don't want multithreading)
+    (or `make USE_THREAD=0 ...` if you don't want multithreading)
  3. and install **precisely** like this
 
     `make PREFIX=~/OpenBLASlib install`
