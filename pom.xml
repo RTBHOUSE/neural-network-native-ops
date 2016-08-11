@@ -6,7 +6,7 @@
 
     <groupId>com.rtbhouse.model</groupId>
     <artifactId>neural-network-native-ops</artifactId>
-    <version>0.2</version>
+    <version>0.3.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -135,6 +135,12 @@
                                 <argument>-I${user.home}/OpenBLASlib/include/</argument>
                                 <argument>-Xcompiler</argument>
                                 <argument>${user.home}/OpenBLASlib/lib/libopenblas.a</argument>
+                                <argument>-Xcompiler</argument>
+                                <argument>-O3</argument>
+                                <argument>-Xcompiler</argument>
+                                <argument>-g</argument>
+                                <argument>-Xcompiler</argument>
+                                <argument>-fno-omit-frame-pointer</argument>
                             </arguments>
                         </configuration>
                     </execution>
