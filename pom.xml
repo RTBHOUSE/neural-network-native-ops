@@ -6,7 +6,7 @@
 
     <groupId>com.rtbhouse.model</groupId>
     <artifactId>neural-network-native-ops</artifactId>
-    <version>0.3.3</version>
+    <version>0.3.4</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -68,7 +68,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <testcase.excludedGroups>com.rtbhouse.tests.Benchmark</testcase.excludedGroups>
+                <testcase.excludedGroups>com.rtbhouse.tests.Benchmark,com.rtbhouse.tests.ReleaseBenchmark</testcase.excludedGroups>
             </properties>
         </profile>
 
@@ -76,6 +76,13 @@
             <id>Benchmarks</id>
             <properties>
                 <testcase.includedGroups>com.rtbhouse.tests.Benchmark</testcase.includedGroups>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>ReleaseBenchmarks</id>
+            <properties>
+                <testcase.includedGroups>com.rtbhouse.tests.ReleaseBenchmark</testcase.includedGroups>
             </properties>
         </profile>
     </profiles>
