@@ -1,6 +1,6 @@
 package com.rtbhouse.model.natives;
 
-import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.NO_TRANSPOSE;
+import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.Trans.NO_TRANSPOSE;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
