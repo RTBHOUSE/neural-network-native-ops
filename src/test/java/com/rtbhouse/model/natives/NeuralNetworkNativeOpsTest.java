@@ -238,7 +238,7 @@ public class NeuralNetworkNativeOpsTest {
         return values;
     }
 
-    private FloatBuffer matrixFB(float... values) {
+    static FloatBuffer matrixFB(float... values) {
         return FloatBuffer.wrap(values);
     }
 }

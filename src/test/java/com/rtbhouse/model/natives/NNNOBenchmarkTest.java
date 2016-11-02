@@ -12,6 +12,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 
 import com.rtbhouse.tests.Benchmark;
+import com.rtbhouse.tests.ReleaseBenchmark;
 
 public class NNNOBenchmarkTest {
 
@@ -23,11 +24,11 @@ public class NNNOBenchmarkTest {
 
     private ChainedOptionsBuilder benchmarkGenericOptions = new OptionsBuilder()
             .warmupTime(TimeValue.seconds(1))
-            .warmupIterations(3)
+            .warmupIterations(5)
             .measurementTime(TimeValue.seconds(1))
-            .measurementIterations(5)
+            .measurementIterations(10)
             .threads(1)
-            .forks(1)
+            .forks(5)
             .shouldFailOnError(true)
             .shouldDoGC(true);
 
@@ -87,6 +88,19 @@ public class NNNOBenchmarkTest {
         Options opts = benchmarkGenericOptions
                 .include("nativeDirectLinearForward")
                 .include("pureJavaLinearForward")
+                .build();
+
+        new Runner(opts).run();
+    }
+
+    @Test
+    @Category(ReleaseBenchmark.class)
+    public void releaseBenchmark() throws Exception {
+        Options opts = benchmarkGenericOptions
+                .include("nativeDirectGemv")
+                .include("pureJavaGemv")
+                .param("inputSize", "300")
+                .param("outputSize", "150")
                 .build();
 
         new Runner(opts).run();
