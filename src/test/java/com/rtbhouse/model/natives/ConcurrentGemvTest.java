@@ -8,7 +8,7 @@ import java.nio.FloatBuffer;
 import org.junit.Test;
 
 /**
- * This test checks that OpenBLAS is compiled with NUM_THREADS define large enough to handle numThreads
+ * This test checks that OpenBLAS is compiled with {@code NUM_THREADS} defined large enough to handle {@code numThreads}
  * concurrent matrix-vector multiplications.
  */
 public class ConcurrentGemvTest {

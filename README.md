@@ -2,8 +2,9 @@
 
 Small Java lib with few neural-network operations:
  - ReLU
- - linearForward
- - and simple matrix-by-vector multiplication (gemv).
+ - ELU
+ - linearForward (matrix-by-vector aka gemv)
+ - linearBatchForward (matrix-by-matrix aka gemm)
 
 Behind the scenes it uses OpenBlas native library
 hence it's even an order of magnitude faster than pure Java implementation.
@@ -23,6 +24,9 @@ To run on another processor / architecture one needs to follow the steps below:
  2. Compile it:
     - for single-threaded application: `make COMMON_OPT="-O3 -g -fno-omit-frame-pointer"`
     - for multi-threaded application: `make USE_THREAD=0 NUM_THREADS=500 COMMON_OPT="-O3 -g -fno-omit-frame-pointer"`
+    
+    (we use frame pointers to be able to produce [flame graphs]
+    (http://techblog.netflix.com/2015/07/java-in-flames.html). You can disable them to save one register)
  3. and install **precisely** like this
 
     `make PREFIX=~/OpenBLASlib install`

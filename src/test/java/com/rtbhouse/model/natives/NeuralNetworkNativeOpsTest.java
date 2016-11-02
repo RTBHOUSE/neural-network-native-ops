@@ -39,7 +39,7 @@ public class NeuralNetworkNativeOpsTest {
     }
 
     private static float[] getArrayFrom(FloatBuffer buffer) {
-        float[] array = new float[buffer.capacity()];
+        float[] array = new float[buffer.limit()];
         buffer.rewind();
         buffer.get(array);
         return array;
