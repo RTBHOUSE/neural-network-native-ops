@@ -61,7 +61,7 @@ public final class NeuralNetworkNativeOps {
      * </p>
      * 
      * <pre>
-     *     f(x) = if x &lt; 0 then exp(x) * alpha - 1 else x
+     * f(x) = max(0, x) + min(0, alpha * (exp(x) - 1))
      * </pre>
      *
      * @param inOut
@@ -69,7 +69,7 @@ public final class NeuralNetworkNativeOps {
      * @param size
      *            size of vector
      * @param alpha
-     *            alpha
+     *            varies the convergence value of the exponential function below zero
      */
     public static native void ELU(FloatBuffer inOut, int size, float alpha);
 

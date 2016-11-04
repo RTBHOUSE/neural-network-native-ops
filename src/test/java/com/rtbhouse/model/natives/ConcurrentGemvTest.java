@@ -13,7 +13,7 @@ import org.junit.Test;
  */
 public class ConcurrentGemvTest {
     private static int numThreads = 200;
-    private static int numIterations = 5000;
+    private static int numIterations = 100;
     private static int dim1 = 500;
     private static int dim2 = 300;
 

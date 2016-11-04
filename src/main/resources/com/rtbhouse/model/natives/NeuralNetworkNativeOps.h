@@ -22,20 +22,18 @@ inline void ReLU(float *inOut, const int size) {
 }
 
 /**
-  * <p>
-  * Exponential linear unit (ELU) function. Performs the operation in-place.
-  * Applies function:
-  *    f(x) = x < 0 ? exp(x) * alpha - 1 : x
-  * to "size" elements of the inOut[]
-  *
-  * @param inOut input/output vector (read write)
-  * @param size  size of vector
-  */
-
-inline void ELU(float *inOut, const int size, float alpha) {
+ * Exponential linear unit (ELU) function. Performs the operation in-place.
+ *
+ * All input vector elements are transformed with the function:
+ *
+ *   f(x) = max(0, x) + min(0, alpha * (exp(x) - 1))
+ */
+inline void ELU(float *inOut, const int size, const float alpha) {
     int i;
-    for(i=0; i<size; i++) {
-        inOut[i] = inOut[i] < 0 ? expf(inOut[i]) * alpha - 1 : inOut[i];
+    for(i=0; i < size; i++) {
+        if (inOut[i] < 0) {
+            inOut[i] = (expf(inOut[i]) - 1) * alpha;
+        }
     }
 }
 

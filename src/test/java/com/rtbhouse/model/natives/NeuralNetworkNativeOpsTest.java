@@ -2,6 +2,7 @@ package com.rtbhouse.model.natives;
 
 import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.NO_TRANSPOSE;
 import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.ReLU;
+import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.ELU;
 import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.TRANSPOSE;
 import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.gemv;
 import static com.rtbhouse.model.natives.NeuralNetworkNativeOps.linearForward;
@@ -29,6 +30,8 @@ public class NeuralNetworkNativeOpsTest {
 
     private final float[] expectedReLUx = new float[] { 0, 3 };
     private float[] expectedAbyXplusY = new float[] { 8f + (2f / 3), 11, 7f + (1f / 3) };
+    private final float[] expectedELUx2 = matrix(2 / (float) Math.E - 2, 3);
+    private final float[] expectedELUx2FirstOutput = matrix(2 / (float) Math.E - 2, -1, -1);
 
     private static FloatBuffer allocateDirectFloatBufferOf(float... src) {
         return ByteBuffer
@@ -64,6 +67,30 @@ public class NeuralNetworkNativeOpsTest {
         ReLU(directX);
         // then
         assertArrayEquals(expectedReLUx, getArrayFrom(directX), MAX_ERROR);
+    }
+
+    @Test
+    public void shouldELUwithHeapFloatBuffers() {
+        // when
+        ELU(heapOutput, 1, 2);
+        // then
+        assertArrayEquals(expectedELUx2FirstOutput, heapOutput.array(), MAX_ERROR);
+    }
+
+    @Test
+    public void shouldELUwithHeapFloatBuffersSizeless() {
+        // when
+        ELU(heapX, 2);
+        // then
+        assertArrayEquals(expectedELUx2, heapX.array(), MAX_ERROR);
+    }
+
+    @Test
+    public void shouldELUwithDirectFloatBuffers() {
+        // when
+        ELU(directX, 2);
+        // then
+        assertArrayEquals(expectedELUx2, getArrayFrom(directX), MAX_ERROR);
     }
 
     @Test
