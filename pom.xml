@@ -6,7 +6,7 @@
 
     <groupId>com.rtbhouse.model</groupId>
     <artifactId>neural-network-native-ops</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,7 +63,7 @@
 
     <profiles>
         <profile>
-            <id>NoBenchmarks</id>
+            <id>noBenchmarks</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -73,17 +73,64 @@
         </profile>
 
         <profile>
-            <id>Benchmarks</id>
+            <id>benchmarks</id>
             <properties>
                 <testcase.includedGroups>com.rtbhouse.tests.Benchmark</testcase.includedGroups>
             </properties>
         </profile>
 
         <profile>
-            <id>ReleaseBenchmarks</id>
+            <id>release</id>
             <properties>
-                <testcase.includedGroups>com.rtbhouse.tests.ReleaseBenchmark</testcase.includedGroups>
+                <testcase.excludedGroups>com.rtbhouse.tests.Benchmark</testcase.excludedGroups>
             </properties>
+            <build>
+                <plugins>
+                    <!-- source, javadoc and gpg plugins are needed only when deploying to maven central -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
@@ -150,50 +197,6 @@
                                 <argument>-fno-omit-frame-pointer</argument>
                             </arguments>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- mvn central reqs -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

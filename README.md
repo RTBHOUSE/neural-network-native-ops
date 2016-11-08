@@ -150,7 +150,7 @@ NNNOBenchmark.nativeDirectLinearForward          300           150  thrpt    5  
 
 It takes more than 1h to run all benchmarks, hence they are turned off by default. To run them type
 ```
-mvn test -P Benchmarks
+mvn test -P benchmarks
 ```
 ## installation
 
