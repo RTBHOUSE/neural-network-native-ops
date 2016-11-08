@@ -19,7 +19,7 @@ import com.github.fommil.netlib.NativeSystemBLAS;
 @State(Scope.Thread)
 public class NNNOBenchmark {
     private static final Random RANDOM = new Random();
-    static final BLAS INSTANCE = NativeSystemBLAS.getInstance();
+    private static BLAS BLAS_INSTANCE;
 
     // uncomment this to run tests for all this presets
     @Param({ "1", "10", "20", "50", "100", "200", "500", "1000", "2000" })
@@ -156,7 +156,7 @@ public class NNNOBenchmark {
     }
 
     static void netlibJavaGemv(float[] matrix, float[] vector, float[] inOut) {
-        INSTANCE.sgemv("T", vector.length, inOut.length, 1.0f, matrix, vector.length, vector, 1, 1.0f, inOut, 1);
+        getBLAS().sgemv("T", vector.length, inOut.length, 1.0f, matrix, vector.length, vector, 1, 1.0f, inOut, 1);
     }
 
     private static void pureJavaLinearForward(float[] weights, float[] biases, float[] input, float[] output) {
@@ -166,6 +166,13 @@ public class NNNOBenchmark {
         }
         System.arraycopy(biases, 0, output, 0, biases.length);
         pureJavaGemv(weights, input, output);
+    }
+
+    private static BLAS getBLAS() {
+        if (BLAS_INSTANCE == null) {
+            BLAS_INSTANCE = NativeSystemBLAS.getInstance();
+        }
+        return BLAS_INSTANCE;
     }
 
 }
