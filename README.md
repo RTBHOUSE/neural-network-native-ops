@@ -1,4 +1,4 @@
-# neural-network native operations
+# Neural-network native operations
 
 Small Java lib with few neural-network operations:
  - ReLU
@@ -14,17 +14,18 @@ It's also faster than [netlib-java](https://github.com/fommil/netlib-java) packa
 Since full performance is achieved only with direct float buffers,
 which are expensive to create, they must be reused.
 
-## building the library
+## Building the library
 
-We supply a Maven artifact precompiled for Linux and sandybridge 64-bit processors
-with the `SSE` and `AVX` instruction set on, but without `AVX2`.
+We supply a Maven artifact precompiled for Linux and Sandy Bridge 64-bit processors with the `SSE` and `AVX` instruction set on, but without `AVX2`.
 
 To run on another processor / architecture one needs to follow the steps below:
  1. Get [OpenBLAS](https://github.com/xianyi/OpenBLAS)
  2. Compile it:
     - for single-threaded application: `make COMMON_OPT="-O3 -g -fno-omit-frame-pointer"`
-    - for multi-threaded application: `make USE_THREAD=0 NUM_THREADS=500 COMMON_OPT="-O3 -g -fno-omit-frame-pointer"`
-    
+    - for multi-threaded application:
+        - `make USE_THREAD=0 NUM_THREADS=500 COMMON_OPT="-O3 -g -fno-omit-frame-pointer"` or
+        - `make USE_THREAD=0 NUM_THREADS=500 CC=gcc-7 HOSTCC=gcc-7 COMMON_OPT="-O3 -g -fno-omit-frame-pointer" TARGET=HASWELL`
+
     (we use frame pointers to be able to produce [flame graphs]
     (http://techblog.netflix.com/2015/07/java-in-flames.html). You can disable them to save one register)
  3. and install **precisely** like this
@@ -37,7 +38,10 @@ To run on another processor / architecture one needs to follow the steps below:
     The `exec:exec` goal will execute `javacpp` postprocessing to
     generate C++ file and finaly `g++` compiler to produce JNI lib (`.so`).
 
-## performance
+To use Intel Math Kernel Library (MKL) instead of OpenBLAS, `<!-- Intel MKL -->` section in `pom.xml` need to be used instead of `<!-- OpenBLAS -->` section.
+
+
+## Performance
 
 Benchmarks were run on a desktop machine
 
@@ -152,7 +156,7 @@ It takes more than 1h to run all benchmarks, hence they are turned off by defaul
 ```
 mvn test -P benchmarks
 ```
-## installation
+## Installation
 
 Releases are distributed on Maven central:
 

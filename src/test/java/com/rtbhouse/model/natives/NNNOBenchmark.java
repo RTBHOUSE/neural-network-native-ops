@@ -21,7 +21,6 @@ public class NNNOBenchmark {
     private static final Random RANDOM = new Random();
     private static BLAS BLAS_INSTANCE;
 
-    // uncomment this to run tests for all this presets
     @Param({ "1", "10", "20", "50", "100", "200", "500", "1000", "2000" })
     private int inputSize;
     @Param({ "1", "10", "20", "50", "100", "200", "500", "1000", "2000" })
@@ -39,8 +38,15 @@ public class NNNOBenchmark {
     private float[] primitiveInput;
     private float[] primitiveOutput;
 
+    private FloatBuffer directMMWeights;
+    private FloatBuffer directMMInput;
+    private FloatBuffer directMMOutput;
+    private FloatBuffer directMMBias;
+
+    private int batchSize = 200;
+
     @Setup
-    public void init() throws Exception {
+    public void init() {
         directMatrix = allocateDirectFloatBufferOf(inputSize * outputSize);
         directInput = allocateDirectFloatBufferOf(inputSize);
         directOutput = allocateDirectFloatBufferOf(outputSize);
@@ -61,6 +67,15 @@ public class NNNOBenchmark {
         randomize(primitiveMatrix);
         randomize(primitiveInput);
         randomize(primitiveOutput);
+
+        directMMWeights = allocateDirectFloatBufferOf(inputSize * outputSize);
+        directMMInput = allocateDirectFloatBufferOf(batchSize * inputSize);
+        directMMOutput = allocateDirectFloatBufferOf(batchSize * outputSize);
+        directMMBias = allocateDirectFloatBufferOf(outputSize);
+        randomize(directMMWeights);
+        randomize(directMMInput);
+        randomize(directMMOutput);
+        randomize(directMMBias);
     }
 
     @Benchmark
@@ -81,6 +96,20 @@ public class NNNOBenchmark {
     @Benchmark
     public void nativeDirectGemv() {
         NeuralNetworkNativeOps.gemv(directMatrix, directInput, directOutput);
+    }
+
+    @Benchmark
+    public void nativeDirectLinearBatchForward() {
+        NeuralNetworkNativeOps.linearBatchForward(
+                NeuralNetworkNativeOps.Trans.TRANSPOSE,
+                this.directMMWeights,
+                this.directMMBias,
+                this.directMMInput,
+                this.directMMOutput,
+                this.inputSize,
+                this.outputSize,
+                this.batchSize
+        );
     }
 
     @Benchmark

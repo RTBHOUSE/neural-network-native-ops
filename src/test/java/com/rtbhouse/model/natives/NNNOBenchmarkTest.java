@@ -98,6 +98,7 @@ public class NNNOBenchmarkTest {
     public void releaseBenchmark() throws Exception {
         Options opts = benchmarkGenericOptions
                 .include("nativeDirectGemv")
+                .include("nativeDirectLinearBatchForward")
                 .include("pureJavaGemv")
                 .param("inputSize", "300")
                 .param("outputSize", "150")

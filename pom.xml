@@ -12,7 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <javacpp.version>1.1</javacpp.version>
+        <javacpp.version>1.4</javacpp.version>
         <jmh.version>1.11.3</jmh.version>
     </properties>
 
@@ -185,16 +185,16 @@
                                 <argument>${project.build.outputDirectory}</argument>
                                 <argument>-d</argument>
                                 <argument>${project.build.sourceDirectory}/../resources/com/rtbhouse/model/natives/</argument>
-                                <argument>-Xcompiler</argument>
-                                <argument>-I${user.home}/OpenBLASlib/include/</argument>
-                                <argument>-Xcompiler</argument>
-                                <argument>${user.home}/OpenBLASlib/lib/libopenblas.a</argument>
-                                <argument>-Xcompiler</argument>
-                                <argument>-O3</argument>
-                                <argument>-Xcompiler</argument>
-                                <argument>-g</argument>
-                                <argument>-Xcompiler</argument>
-                                <argument>-fno-omit-frame-pointer</argument>
+
+                                <argument>-Dplatform.compiler=g++-7</argument>
+
+                                <!-- Intel MKL -->
+                                <!--
+                                <argument>-Dplatform.compiler.default=-march=haswell -m64 -O3 -s -g -mavx2 -mfma -mtune=haswell -fno-omit-frame-pointer -I/opt/intel/mkl/include/ /opt/intel/mkl/lib/intel64_lin/libmkl_intel_lp64.a /opt/intel/mkl/lib/intel64_lin/libmkl_sequential.a /opt/intel/mkl/lib/intel64_lin/libmkl_core.a -DUSE_MKL</argument>
+                                -->
+
+                                <!-- OpenBLAS -->
+                                <argument>-Dplatform.compiler.default=-march=haswell -m64 -O3 -s -g -mavx2 -mfma -mtune=haswell -fno-omit-frame-pointer -I${user.home}/OpenBLASlib/include/ ${user.home}/OpenBLASlib/lib/libopenblas.a</argument>
                             </arguments>
                         </configuration>
                     </execution>

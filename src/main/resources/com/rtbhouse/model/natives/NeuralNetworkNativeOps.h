@@ -1,5 +1,11 @@
 #include <stdio.h>
+
+#ifdef USE_MKL
+#include <mkl.h>
+#else
 #include <cblas.h>
+#endif
+
 #include <math.h>
 
 enum NNNOTranspose {
@@ -89,6 +95,7 @@ inline void linearForward(const NNNOTranspose transposeWeights, const float *wei
         cblas_sgemv( CblasRowMajor, CblasTrans,
             inputSize, outputSize, ALPHA, weights, outputSize, input, X_INC, BETA, output, Y_INC);
     } else {
+
         cblas_sgemv( CblasRowMajor, CblasNoTrans,
             outputSize, inputSize, ALPHA, weights, inputSize, input, X_INC, BETA, output, Y_INC);
     }
